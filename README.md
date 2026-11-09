@@ -1,46 +1,65 @@
 # Shadowing
 
-Shadowing is a local English listening and typing practice application. It is built with Django, SQLite, Django Templates, Bootstrap, JavaScript, and IndexedDB.
+Shadowing is a local English listening and typing practice app. It uses Django, SQLite, Django Templates, Bootstrap, vanilla JavaScript, and IndexedDB.
 
-## Initial setup
+## Features
 
-1. Install Python 3.14.
-2. Run `setup.bat`. It creates the project virtual environment, installs the pinned Python dependencies, downloads the pinned Bootstrap release, and copies its assets into the local static directory.
-3. Run `start.bat` to start Django. The application database is the local `shadowing.sqlite3` file.
-4. Open the local URL printed by `start.bat` (default `http://127.0.0.1:8000/`).
+- Play local MP4/WebM videos and import SRT/VTT subtitles in the browser.
+- Practice subtitle cues, track progress, and select vocabulary words or phrases.
+- Keep practice projects, subtitles, cues, and progress in browser IndexedDB.
+- Keep canonical workspaces and vocabulary in local SQLite; queue vocabulary changes while offline.
+- Suggest English lemmas locally without an online translation or AI service.
+- Coordinate vocabulary writers with Workspace leases, 15-second heartbeats, 60-second expiry, Web Locks, and fencing tokens.
 
-For a manual foreground launch, use `python manage.py runserver 127.0.0.1:8000`. Django loads the ignored project `.env` automatically; do not paste the secret key into a command. If the configured port is already in use, open the running server URL instead of launching a second server.
+Raw exercise answers are not persisted. Video and subtitle files are not uploaded to Django or external services. The app binds its development server to localhost.
 
-The first startup creates a local `.env` file with a random secret key. That file is excluded from Git. SQLite is stored in `shadowing.sqlite3` in the project directory; set `DJANGO_DB_PATH` in `.env` only if you want to store it at another local path. Django binds to `127.0.0.1:8000` by default; set `DJANGO_PORT` in `.env` if that port is reserved on the computer. Startup checks migration status but never applies migrations.
+## Requirements
 
-To install requirements manually in this Windows environment, use:
+- Windows
+- Python 3.14
+- Node.js for JavaScript tests
+
+## Setup and run
+
+1. Run `setup.bat` once to create `.venv` and install the pinned dependencies.
+2. Run `start.bat`. It checks migration status without applying migrations and starts Django on the local address configured by `DJANGO_PORT` (default `8000`).
+3. Open the URL printed by the script, usually `http://127.0.0.1:8000/`.
+
+To run Django in the foreground instead, activate `.venv` and run:
 
 ```bat
-py -3.14 -m venv --clear --without-pip .venv
-py -3.14 -m pip --python .venv install -r requirements.txt
+python manage.py runserver 127.0.0.1:8000
 ```
 
-The global Python installation is not modified.
+The Django settings load the project-local `.env` file. Keep `.env` private; do not commit its secret key. If the port is already in use, open the running server URL or stop that server before starting another.
+
+## Database migrations
+
+Migrations are never applied automatically at startup. Review pending migrations before applying them manually. The vocabulary, synchronization, and lease APIs require migrations `0002` through `0005`; without them, those database-backed features remain unavailable. Local browser practice can still run.
+
+The local `shadowing.sqlite3`, `.env`, virtual environments, runtime files, and collected static files are excluded from Git. A fresh checkout creates its local database as needed; user data is not part of the repository.
+
+## Tests
+
+Run JavaScript tests with:
+
+```bat
+node --test --test-isolation=none tests/*.test.mjs
+```
+
+Run Django tests with an explicitly configured temporary SQLite database and a local test secret:
+
+```bat
+set DJANGO_DB_PATH=%TEMP%\shadowing-tests.sqlite3
+set DJANGO_SECRET_KEY=local-test-only
+python manage.py test
+```
+
+Do not point test runs at `shadowing.sqlite3`.
 
 ## Stop
 
-- `stop.bat` stops only the Django process started by this project.
-- `stop-all.bat` stops Django. The SQLite database file remains intact.
+- `stop.bat` stops the Django process started by `start.bat`.
+- A foreground `runserver` process stops with `Ctrl+C`.
 
-## Health check
-
-`/health/` returns the application and SQLite status as JSON. If the database file cannot be opened, Django reports degraded status and remains available on localhost.
-
-## Workspace foundation
-
-The home page creates, selects, archives, and restores Workspaces. Each Workspace uses the same UUID in Django and the browser. SQLite holds the canonical Workspace name and active/archived state. The browser stores Workspace metadata and the current selection in the versioned `shadowing-local` IndexedDB database.
-
-IndexedDB version 1 contains three object stores:
-
-- `workspaces`: local Workspace metadata, keyed by UUID.
-- `settings`: browser-local settings, including the selected Workspace and per-Workspace defaults.
-- `pendingOperations`: Workspace registration requests to retry when SQLite becomes available.
-
-Workspace creation is saved locally before the Django registration request. If the request fails, the local Workspace and its pending registration remain in IndexedDB. Archive and restore require the SQLite record to be available. Clearing this site's browser data can remove local Workspace metadata and pending registrations.
-
-Phase two adds `core/migrations/0001_initial.py`, which creates the Workspace table. It has been applied to the local SQLite database. The project startup scripts do not apply future migrations automatically; review and approve them before applying.
+Backup and recovery are not implemented yet.

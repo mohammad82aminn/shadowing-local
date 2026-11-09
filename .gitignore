@@ -1,0 +1,11 @@
+.env
+.venv/
+.venv-tmp/
+venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.sqlite3-*
+.runtime/
+staticfiles/
+.pytest_cache/

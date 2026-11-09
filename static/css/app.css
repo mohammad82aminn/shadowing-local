@@ -1,0 +1,111 @@
+body {
+  font-family: system-ui, sans-serif;
+}
+
+main[data-workspace-app] {
+  max-width: 72rem;
+}
+
+.current-workspace {
+  border-right: 0.25rem solid var(--bs-primary);
+  padding: 0.65rem 0.9rem;
+  background: #fff;
+}
+
+.workspace-details {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.workspace-status {
+  font-size: 0.875rem;
+}
+
+.workspace-form .form-text {
+  line-height: 1.7;
+}
+
+[data-workspace-message][hidden] {
+  display: none;
+}
+
+.video-file-fallback {
+  max-width: 22rem;
+}
+
+.local-video-player {
+  display: block;
+  width: 100%;
+  max-height: min(68vh, 48rem);
+  background: #111;
+  border-radius: 0.5rem;
+}
+
+.local-video-player[hidden] {
+  display: none;
+}
+
+.subtitle-preview-cue {
+  background: #fff;
+}
+
+.subtitle-speaker {
+  max-width: 24rem;
+}
+
+.cue-card .cue-time {
+  width: min(100%, 12rem);
+}
+
+[data-subtitle-preview] label,
+[data-cue-list] label {
+  margin-inline-end: 1rem;
+}
+
+.answer-practice {
+  border-inline-start: 0.25rem solid var(--bs-success);
+}
+
+.answer-expected {
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  background: #f1f3f5;
+  font-size: 1.1rem;
+}
+
+.answer-input {
+  flex: 1 1 20rem;
+  min-width: 12rem;
+}
+
+.subtitle-word.active {
+  color: var(--bs-primary-text-emphasis);
+  background: var(--bs-primary-bg-subtle);
+  border-color: var(--bs-primary) !important;
+}
+
+.vocabulary-entry {
+  overflow-wrap: anywhere;
+}
+
+.vocabulary-meaning-row label {
+  flex: 1 1 auto;
+}
+
+.vocabulary-selection {
+  padding: 0.75rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.replay-padding {
+  width: 7rem;
+  margin-top: 0.25rem;
+}
+
+.cue-editor summary {
+  cursor: pointer;
+  color: var(--bs-secondary-color);
+  padding-block: 0.5rem;
+}

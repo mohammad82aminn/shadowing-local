@@ -1,0 +1,172 @@
+{% load static %}
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shadowing | Video Player</title>
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.rtl.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <script type="module" src="{% static 'js/workspace-manager.js' %}"></script>
+  </head>
+  <body class="bg-light">
+    <main class="container py-5" data-workspace-app
+      data-workspace-collection-url="{% url 'workspace-collection' %}"
+      data-workspace-detail-url="{% url 'workspace-detail' '00000000-0000-0000-0000-000000000000' %}">
+      <header class="mb-4">
+        <p class="text-primary fw-semibold mb-1">Shadowing</p>
+        <h1 class="h2 mb-2">محیط‌های کاری</h1>
+        <p class="text-secondary mb-0">هر Workspace اطلاعات و تنظیمات مستقل خود را دارد.</p>
+      </header>
+
+      <div class="alert alert-info" role="note">
+        داده‌های محلی در همین مرورگر نگهداری می‌شوند. فایل ویدئو در این بخش ذخیره یا بارگذاری نمی‌شود.
+      </div>
+      <p class="current-workspace mb-3">
+        Workspace جاری: <strong data-active-workspace>در حال بارگذاری…</strong>
+      </p>
+      <div class="alert alert-success" role="status" aria-live="polite" data-workspace-message hidden></div>
+
+      <section class="card shadow-sm mb-4" aria-labelledby="create-workspace-heading">
+        <div class="card-body p-4">
+          <h2 class="h5" id="create-workspace-heading">ساخت Workspace</h2>
+          <form class="workspace-form" data-workspace-form>
+            <label class="form-label" for="workspace-name">نام</label>
+            <div class="input-group">
+              <input class="form-control" id="workspace-name" name="name" type="text"
+                maxlength="120" required autocomplete="off" data-workspace-name>
+              <button class="btn btn-primary" type="submit">ایجاد و انتخاب</button>
+            </div>
+            <div class="form-text">اگر SQLite در دسترس نباشد، ابتدا به‌صورت محلی ثبت می‌شود و بعداً می‌توان ثبت سرور را دوباره امتحان کرد.</div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card shadow-sm" aria-labelledby="workspace-list-heading">
+        <div class="card-body p-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="h5 mb-0" id="workspace-list-heading">Workspaceهای این مرورگر و سرور محلی</h2>
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-retry-registration>
+              تلاش دوباره برای اتصال
+            </button>
+          </div>
+          <ul class="list-group" data-workspace-list aria-live="polite"></ul>
+          <p class="text-secondary mt-3 mb-0 small">
+            پاک‌شدن داده‌های سایت از مرورگر می‌تواند Workspaceهای ثبت‌نشده را حذف کند. برای Workspace موقت، ثبت در سرور محلی را دوباره امتحان کنید.
+          </p>
+        </div>
+      </section>
+
+      <section class="card shadow-sm mt-4" aria-labelledby="video-player-heading" data-video-player>
+        <div class="card-body p-4">
+          <h2 class="h5" id="video-player-heading">پخش ویدئوی محلی</h2>
+          <p class="text-secondary">
+            فایل MP4 یا WebM از رایانهٔ شما مستقیماً در مرورگر پخش می‌شود و به سرور ارسال نمی‌شود.
+          </p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <button class="btn btn-primary" type="button" data-select-video disabled>انتخاب ویدئو</button>
+            <button class="btn btn-outline-secondary" type="button" data-restore-video hidden>بازیابی دسترسی ویدئوی قبلی</button>
+            <label class="visually-hidden" for="video-file">انتخاب فایل ویدئو</label>
+            <input class="form-control video-file-fallback" id="video-file" type="file"
+              accept=".mp4,.webm,video/mp4,video/webm" data-video-file>
+          </div>
+          <div class="alert alert-info" role="status" aria-live="polite" data-video-message>
+            در حال آماده‌سازی پخش‌کننده…
+          </div>
+          <p class="small text-secondary mb-3" data-video-details hidden></p>
+          <video class="local-video-player" controls playsinline preload="metadata"
+            aria-label="پخش‌کنندهٔ ویدئوی محلی" data-video-element hidden></video>
+        </div>
+      </section>
+      <section class="card shadow-sm mt-4" aria-labelledby="subtitle-heading" data-subtitle-manager>
+        <div class="card-body p-4">
+          <h2 class="h5" id="subtitle-heading">واردکردن زیرنویس و مدیریت Cue</h2>
+          <p class="text-secondary" data-subtitle-video-name>برای واردکردن زیرنویس، ابتدا ویدئو را انتخاب کنید.</p>
+          <label class="form-label" for="subtitle-file">انتخاب فایل انگلیسی SRT یا VTT</label>
+          <input class="form-control mb-3" id="subtitle-file" type="file" accept=".srt,.vtt,application/x-subrip,text/vtt" data-subtitle-file>
+          <div class="alert alert-info" role="status" aria-live="polite" data-subtitle-message>زیرنویس در مرورگر تحلیل می‌شود و به سرور فرستاده نمی‌شود.</div>
+          <div data-subtitle-preview aria-live="polite"></div>
+          <button class="btn btn-primary mb-4" type="button" data-confirm-subtitle disabled>تأیید زیرنویس</button>
+          <div class="border-top pt-3">
+            <h3 class="h6">پروژه‌های این ویدئو</h3>
+            <div data-practice-projects></div>
+            <div class="row g-2 align-items-end my-3">
+              <div class="col-auto">
+                <label class="form-label" for="subtitle-offset">Offset کلی (ثانیه)</label>
+                <input class="form-control" id="subtitle-offset" type="number" min="-10" max="10" step="0.1" value="0" data-subtitle-offset disabled>
+              </div>
+              <p class="col text-secondary small mb-2">زمان اصلی زیرنویس حفظ می‌شود؛ offset فقط زمان مؤثر را جابه‌جا می‌کند.</p>
+            </div>
+            <section class="card bg-light mb-3" aria-labelledby="progress-statistics-heading" data-progress-statistics>
+              <div class="card-body">
+                <h3 class="h6" id="progress-statistics-heading">آمار پیشرفت Cueهای فعال</h3>
+                <div class="mb-2">
+                  <div class="d-flex justify-content-between gap-2"><span>تکمیل درست</span><span data-progress-value="correctCompletion">— (۰ / ۰)</span></div>
+                  <div class="progress" role="progressbar" aria-label="تکمیل درست" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-progress-bar="correctCompletion"><div class="progress-bar bg-success" style="width: 0%"></div></div>
+                </div>
+                <div class="mb-2">
+                  <div class="d-flex justify-content-between gap-2"><span>پوشش</span><span data-progress-value="coverage">— (۰ / ۰)</span></div>
+                  <div class="progress" role="progressbar" aria-label="پوشش" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-progress-bar="coverage"><div class="progress-bar" style="width: 0%"></div></div>
+                </div>
+                <div>
+                  <div class="d-flex justify-content-between gap-2"><span>دقت تلاش اول</span><span data-progress-value="firstAttemptAccuracy">— (۰ / ۰)</span></div>
+                  <div class="progress" role="progressbar" aria-label="دقت تلاش اول" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-progress-bar="firstAttemptAccuracy"><div class="progress-bar bg-info"></div></div>
+                </div>
+              </div>
+            </section>
+            <div data-cue-list aria-live="polite"></div>
+            <section class="card shadow-sm mt-4" aria-labelledby="vocabulary-heading" data-vocabulary-notebook
+              data-vocabulary-collection-template="{% url 'vocabulary-collection' '00000000-0000-0000-0000-000000000000' %}"
+              data-lemma-suggestions-template="{% url 'vocabulary-lemma-suggestions' '00000000-0000-0000-0000-000000000000' %}"
+              data-vocabulary-sync-template="{% url 'vocabulary-sync' '00000000-0000-0000-0000-000000000000' %}">
+              <div class="card-body p-4">
+                <h3 class="h5" id="vocabulary-heading">دفتر واژگان</h3>
+                <p class="small text-secondary" data-vocabulary-message role="status" aria-live="polite">برای استفاده، یک Workspace فعال انتخاب کنید.</p>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                  <button class="btn btn-sm btn-outline-primary" type="button" data-vocabulary-sync>همگام‌سازی دفتر</button>
+                  <span class="small text-secondary align-self-center" data-sync-status></span>
+                </div>
+                <div class="alert alert-warning py-2" data-vocabulary-conflicts hidden aria-live="polite"></div>
+                <form class="row g-2 align-items-end mb-3" data-vocabulary-form>
+                  <div class="col">
+                    <label class="form-label" for="vocabulary-form">واژه یا عبارت انگلیسی</label>
+                    <input class="form-control" id="vocabulary-form" maxlength="255" required autocomplete="off" data-vocabulary-entry-form>
+                    <button class="btn btn-sm btn-outline-primary mt-2" type="button" data-lemma-suggest>پیشنهاد صورت پایهٔ آفلاین</button>
+                    <section class="border rounded p-3 mt-2" data-lemma-panel hidden aria-live="polite">
+                      <p class="small mb-2" data-lemma-message>پیشنهاد را انتخاب یا اصلاح کنید؛ هیچ گزینه‌ای خودکار پذیرفته نمی‌شود.</p>
+                      <div class="d-flex flex-wrap gap-2 mb-2" data-lemma-options></div>
+                      <label class="form-label" for="lemma-form">صورت پایهٔ انتخاب‌شده</label>
+                      <input class="form-control mb-2" id="lemma-form" maxlength="120" autocomplete="off" data-lemma-form>
+                      <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-sm btn-success" type="button" data-lemma-confirm disabled>تأیید و ثبت رابطه</button>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-lemma-reject>رد پیشنهادها</button>
+                      </div>
+                    </section>
+                  </div>
+                  <div class="col-12" data-vocabulary-meanings></div>
+                  <div class="col-12 d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-add-meaning>افزودن معنی فارسی</button>
+                    <button class="btn btn-primary" type="submit" data-save-vocabulary>ثبت مدخل</button>
+                    <button class="btn btn-outline-secondary" type="button" data-cancel-vocabulary hidden>لغو ویرایش</button>
+                  </div>
+                </form>
+                <div class="row g-2 align-items-end mb-3">
+                  <div class="col">
+                    <label class="form-label" for="vocabulary-search">جست‌وجو در دفتر</label>
+                    <input class="form-control" id="vocabulary-search" type="search" autocomplete="off" data-vocabulary-search>
+                  </div>
+                </div>
+                <div class="list-group" data-vocabulary-list aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="{% static 'js/video-player.js' %}"></script>
+    <script type="module" src="{% static 'js/cue-manager.js' %}"></script>
+    <script type="module" src="{% static 'js/answer-engine.js' %}"></script>
+    <script type="module" src="{% static 'js/progress-statistics.js' %}"></script>
+    <script type="module" src="{% static 'js/vocabulary-notebook.js' %}"></script>
+  </body>
+</html>
